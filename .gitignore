@@ -2,6 +2,7 @@
 *.log
 qtlab.bat
 qtlabgui.cfg
+userconfig.py
 *.cfg
 *.lock
 *.bak
