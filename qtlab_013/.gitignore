@@ -1,0 +1,9 @@
+*.py[cod]
+*.log
+qtlab.bat
+qtlabgui.cfg
+*.cfg
+*.lock
+*.bak
+*.tmp
+meas[123456789]*
