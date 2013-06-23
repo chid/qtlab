@@ -3,7 +3,7 @@
 #LockIn2 = qt.instruments.create('LockIn2', 'x_SR830', address='GPIB::4', reset=False)
 #Magnet1 = qt.instruments.create('Magnet1', 'x_AMI_420', address='GPIB::22', reset=False)
 #TempCon1 = qt.instruments.create('TempCon1', 'x_Cryocon_32B', address='GPIB::12', reset=False)
-SourceMeter1 = qt.instruments.create('SourceMeter1', 'x_Keithley_2636', address='GPIB::18', reset=False)
+#SourceMeter1 = qt.instruments.create('SourceMeter1', 'x_Keithley_2636', address='GPIB::18', reset=False)
 #Source1 = qt.instruments.create('Source1', 'x_Yokogawa_7651', address='GPIB::4', reset=False)
 # Meter1 = qt.instruments.create('Meter1', 'x_Keithley_2001', address='GPIB::16', reset=False)
 
