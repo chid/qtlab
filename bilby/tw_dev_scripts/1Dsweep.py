@@ -48,8 +48,8 @@ def get_axislabel(axis):
 # and will be called:
 # <timestamp>_testmeasurement.dat
 # to find out what 'datadir' is set to, type: qt.config.get('datadir')
-data = qt.Data(name='1D_run')
-
+data = qt.Data(name=title)
+V = [0,0,0,0]
 # Now you provide the information of what data will be saved in the
 # datafile. A distinction is made between 'coordinates', and 'values'.
 # Coordinates are the parameters that you sweep, values are the
@@ -84,7 +84,8 @@ for x in xaxissweep:
         V = find_V(x)
         set_parameters(V)
         #V_drn = Meter1.get_readnextval()    
-        #I_drn = V_drn / gain * 1e9 #for nA	
+        #I_drn = V_drn / gain * 1e9 #for nA
+        qt.msleep(0.001)
 	I_drn = get_current()
 	# save the data point to the file, this will automatically trigger
         # the plot windows to update
