@@ -40,7 +40,7 @@ class Stabgui:
 
 ## ===================================== Initialization ===================================== ##	
 	def __init__(self):
-		qt.windows.get('main').hide()
+		#qt.windows.get('main').hide()
 
 		self.xml = gtk.glade.XML('clean_stabgui.glade', 'window')
 		window = self.xml.get_widget('window')
@@ -49,7 +49,8 @@ class Stabgui:
 		
 		initgui.initialize_gui(self.xml)
 		
-		pkl_in_file = open('cleanlastsettings.pkl', 'rb')
+		#pkl_in_file = open('cleanlastsettings.pkl', 'rb')
+                pkl_in_file = open('cleanlastsettings.pkl')
 		self.blank_activate()
 		self.settings = pickle.load(pkl_in_file)
 		pkl_in_file.close()
@@ -64,7 +65,7 @@ class Stabgui:
 		self.listsettings = []
 		self.exptime = []
 		
-		qt.windows.get('main').hide()
+		#qt.windows.get('main').hide()
 		
 	def	blank_activate(self):
 		self.settings = {'checkRF1': 0,               # EXPERIMENT

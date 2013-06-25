@@ -95,7 +95,7 @@ class x_SR830(Instrument):
             })
         self.add_parameter('out', type=types.FloatType, channels=(1,2,3,4),
             flags=Instrument.FLAG_GETSET,
-            minval=-10.5, maxval=10.5, units='V', format='%.3f', tags=['sweep'])
+            minval=-10.5, maxval=10.5, units='V', format='%.3f', tags=['sweep'], maxstep=10e-3, stepdelay=10)
         self.add_parameter('in', type=types.FloatType, channels=(1,2,3,4),
             flags=Instrument.FLAG_GET,
             minval=-10.5, maxval=10.5, units='V', format='%.3f', tags=['measure'])

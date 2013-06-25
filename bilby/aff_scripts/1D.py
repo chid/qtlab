@@ -66,12 +66,11 @@ print 'measurement started'
 qt.mstart()
 
 # It is actually a simple loop.
-
+E
 for V in V_src:
     Source1.set_voltage(V)
     # Pause to let the current meter settle
-    qt.msleep(0.2)
-    
+    qt.msleep(0.2)    
     # readout
     V_drn = Meter1.get_readnextval()
     I_drn = V_drn / gain * 1e9 #for nA
@@ -90,4 +89,4 @@ plot_Isd.save_png()
 
 
 
-print 'measurement finished'
+1d

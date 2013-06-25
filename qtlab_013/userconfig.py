@@ -28,10 +28,10 @@ config['allowed_ips'] = (
 config['instrument_server'] = False
 
 ## This sets a default location for data-storage
-config['datadir'] = 'd:/data'
+config['datadir'] = 'c:/data'
 
 ## This sets a default directory for qtlab to start in
-#config['startdir'] = 'd:/QTLab/bilby'
+#config['startdir'] = 'c:/QTLab/bilby'
 
 ## A default script (or list of scripts) to run after qtlab started
 config['startscript'] = []      #e.g. 'initscript1.py'
@@ -43,20 +43,20 @@ config['exitscript'] = []       #e.g. ['closescript1.py', 'closescript2.py']
 # global namespace as functions.
 config['scriptdirs'] = [
 #        'examples/scripts',
-        'd:/QTLab/bilby/Roggelab_source',
-        'd:/QTLab/bilby/aff_scripts',
+        'c:/QTLab/bilby/Roggelab_source'#,
+#        'c:/QTLab/bilby/aff_scripts',
 ]
 
 ## This sets a user instrument directory
 ## Any instrument drivers placed here will take
 ## preference over the general instrument drivers
-config['user_insdir'] = 'd:/QTLab/bilby/instrument_plugins'
+config['user_insdir'] = 'c:/QTLab/bilby/instrument_plugins'
 
 ## For adding additional folders to the 'systm path'
 ## so python can find your modules
 #import sys
-#sys.path.append('d:/folder1')
-#sys.path.append('d:/folder2')
+#sys.path.append('c:/folder1')
+#sys.path.append('c:/folder2')
 
 # Whether to start the GUI automatically
 config['startgui'] = True
