@@ -15,7 +15,7 @@ config.remove([
             ])
 
 # QTLab instance name and port for networked operation
-config['instance_name'] = 'qtlab_VTI_LAB'
+config['instance_name'] = 'qtlab_XXXXXXXXX' #eg DC_FRIDGE
 config['port'] = 12002
 
 # A list of allowed IP ranges for remote connections
@@ -28,10 +28,10 @@ config['allowed_ips'] = (
 config['instrument_server'] = False
 
 ## This sets a default location for data-storage
-config['datadir'] = 'c:/data'
+config['datadir'] = 'XXXXXXXXXXX' #eg d:/data
 
 ## This sets a default directory for qtlab to start in
-#config['startdir'] = 'c:/QTLab/bilby'
+config['startdir'] = 'XXXXXX/QTLab/bilby' #eg d:/<path_to_QTLab>
 
 ## A default script (or list of scripts) to run after qtlab started
 config['startscript'] = []      #e.g. 'initscript1.py'
@@ -43,14 +43,14 @@ config['exitscript'] = []       #e.g. ['closescript1.py', 'closescript2.py']
 # global namespace as functions.
 config['scriptdirs'] = [
 #        'examples/scripts',
-        'c:/QTLab/bilby/Roggelab_source'#,
-#        'c:/QTLab/bilby/aff_scripts',
+        'XXXXXXXX/QTLab/bilby/Roggelab_source', #eg d:/<path_to_QTLab>
+        'XXXXXXXX/QTLab/bilby/aff_scripts',
 ]
 
 ## This sets a user instrument directory
 ## Any instrument drivers placed here will take
 ## preference over the general instrument drivers
-config['user_insdir'] = 'c:/QTLab/bilby/instrument_plugins'
+config['user_insdir'] = 'XXXXXXXX/QTLab/bilby/instrument_plugins' #eg d:/<path_to_QTLab>
 
 ## For adding additional folders to the 'systm path'
 ## so python can find your modules

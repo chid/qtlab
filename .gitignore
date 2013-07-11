@@ -8,3 +8,4 @@ qtlabgui.cfg
 *.tmp
 meas[123456789]*
 80_create_instruments.py
+userconfig.py
