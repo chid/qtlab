@@ -1,8 +1,10 @@
 # Filename: compensation.py
 # Charley Peng <cpeng92@gmail.com>
 # October 2013
+# Based off Joris Keizer's 2D sweep.
 
 # First function is to retain on a peak.
+# Function Compensation.
 
 from numpy import pi, random, arange, size
 from time import time, sleep
@@ -62,15 +64,38 @@ MULTIMETER_resolution = 3e-6
 # DON'T EDIT BELOW
 #################################################################
 
-def compensation(jump=0.004, iterations=1):
+def compensation(LockInThresh=0.005, Meter=None, LockIn=LOCKIN, jump=0.004, iterations=1):
     # does one shot of compensation by default
     # threshold
+    # TODO: Fix
+    V = 0 # either this will be
 
     # Assumptions
     # All instruments initialized
 
     # Measure the Lock In
-    LockInX = LOCKIN
+    LockInX = LOCKIN.get_X()
+    # We can also get_Y as an error check.
+
+    while iterations > 0:  # iterations will be the number of iterations remaining
+        iterations -= 1  # decrement the counter
+        if Meter is not None:
+            I = Meter.readval()  # or is it read nextval that we should use
+            if I > MeterThresh:
+                pass
+
+        if abs(LockInX) > LockInThresh:
+            if LockInX > 0:
+                V += jump
+            else:
+                V -= jump
+
+                # else we do nothing.
+
+
+
+
+                # By default we do not measure I_sd but if it is provided we also provide meter threshold.
 
 
 # Function to check whether an instrument is initialized
@@ -84,7 +109,7 @@ def check_instruments(str):
 
 # Initialize SOURCE_1
 print "--------------------------------------------------------"
-if check_instruments('SOURCE_1') == False:
+if not check_instruments('SOURCE_1'):
     print "SOURCE_1 not initialized."
     print "Trying to initialize SOURCE_1..."
     SOURCE_1 = qt.instruments.create('SOURCE_1', SOURCE_1_driver, address='GPIB::' + str(SOURCE_1_address), reset=False)
@@ -102,12 +127,12 @@ else:
 
 # Initialize MULTIMETER
 print "--------------------------------------------------------"
-if check_instruments('MULTIMETER') == False:
+if not check_instruments('MULTIMETER'):
     print "MULTIMETER not initialized."
     print "Trying to initialize MULTIMETER..."
     MULTIMETER = qt.instruments.create('MULTIMETER', MULTIMETER_driver, address='GPIB::' + str(MULTIMETER_address),
                                        reset=False)
-    if check_instruments('MULTIMETER') == False:
+    if not check_instruments('MULTIMETER'):
         print "Could not initialize MULTIMETER, exiting..."
         sys.exit()
     else:
@@ -171,11 +196,6 @@ if (V2_start <> V2_end) and (SOURCE_2_enabled == True):
 
 # Start the measurement
 qt.mstart()
-for V2 in sweep_2: e
-if (SOURCE_2_enabled == True):
-    SOURCE_2.set_voltage(V2)
-SOURCE_1.set_voltage(sweep_1[0])
-qt.msleep(2.5)
 for V1 in sweep_1:
     SOURCE_1.set_voltage(V1)
     I_meas = MULTIMETER.get_readval()
@@ -189,7 +209,7 @@ for V1 in sweep_1:
     if (I_meas * I_sens) > abs(I_max):
         print "BREAKING: Max I reached"
         if enable_protection == True:
-            print "Exceedd Current Limit Exiting..."
+            print 'Exceed Current Limit Exiting...'
             break
 data.new_block()
 #plot_map.update()
