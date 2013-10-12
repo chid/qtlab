@@ -15,9 +15,13 @@ class channels(object):
         self.inst = inst
         self._parameter_name = parameter
         self._name = name
+        self._units = self.inst.get_parameter_options(self._parameter_name)['units'];
 
     def get_units(self):
-        return self.inst.get_parameter_options(self._parameter_name)['units']
+        return self._units
+
+    def set_units(self, units):
+        self._units = units
     
     def set_name(self, name):
         self._name = name

@@ -68,15 +68,17 @@ class sweep(object):
     Update comments, rename stuff to make more understandable
     '''
     
-    def __init__(self,name, channelsout, channelsin,  loops = '1'):
+    def __init__(self,name, channelsout, channelsin, updatepointbypoint = False,  loops = '1'):
         '''
         Initialises the sweep
 
         Input:
             channelsout (list of out channel instances) : out channels
             channelsin (list of in channel instances) : in channels
+            updatepointbypoint(do you want the plot to update at each point?)
             loops (int) : number of loops
         '''
+        self._updatepoints = updatepointbypoint
         self._name = name
         self._time = time.localtime()
         self._initialised = False
@@ -235,7 +237,7 @@ class sweep(object):
         axislabel = ''
         for q in range(0, self._number_of_out_channels):
             if self._channel_factors[loop][q] != 0:
-                axislabel = axislabel + str(self._channel_factors[loop][q]) + self._channels_out[q].get_name() + '+'
+                axislabel = axislabel + str(self._channel_factors[loop][q]) + self._channels_out[q].get_name()+ '(' + self._channels_out[q].get_units() + ')' + '+'
         axislabel = axislabel[0:(len(axislabel)-1)]
         return axislabel
 
@@ -257,18 +259,20 @@ class sweep(object):
         to set with the channels. After they are set the in channels are measured'''
   
         V = [[] for row in range(self._number_of_out_channels)]
+        Out = [[] for row in range(self._number_of_out_channels)]
         In = [[]  for row in range(self._number_of_in_channels)]
         for x in self._sweep[0]:
             self._coord_current[0] = x
             for  q in range(0, self._number_of_out_channels):
                 V[q] = dotproduct(self._coord_current[:], self._channel_factors[:, q]) + self._channel_constants[q]
                 self._channels_out[q].set_out(V[q])
+                Out[q] = self._channels_out[q].get_out()
             qt.msleep(0.001)
             for  q in range(0, self._number_of_in_channels):
                 In[q] = self._channels_in[q].get_in()                
-            datapoints = self._coord_current + In + V
+            datapoints = self._coord_current + In + Out
             self._data.add_data_point(*datapoints)           
-            if self._number_of_loops == 1:
+            if self._updatepoints == True:
                 self._update_plots()                
         
     def _add_coordinates(self):
@@ -277,9 +281,9 @@ class sweep(object):
         for q in range(0, self._number_of_loops):
             self._data.add_coordinate(self.get_axislabel(q))
         for q in range(0, self._number_of_in_channels):    
-            self._data.add_value(self._channels_in[q].get_name())
+            self._data.add_value(self._channels_in[q].get_name()+ '(' + self._channels_in[q].get_units() + ')' )
         for q in range(0, self._number_of_out_channels):
-            self._data.add_coordinate(self._channels_out[q].get_name())
+            self._data.add_coordinate(self._channels_out[q].get_name() + '(' + self._channels_out[q].get_units() + ')' )
 
     def _add_plots(self):
         '''This adds plots which is determined by the number of loops and the number of in channels'''
@@ -332,12 +336,12 @@ class sweep(object):
     
         
     def _get_path(self):
-
+        '''gets the pathname for saving the data'''
         path = config['datadir']
         path = os.path.join(path, time.strftime('%Y%m%d', self._time))
         path = os.path.join(path, time.strftime('%H%M%S', self._time) +'_'+ self._name)
         if self._number_of_loops == 1:
-            path = os.path.join(path, '1D sweep' + self.get_axislabel(loop) +'.dat')
+            path = os.path.join(path, '1D sweep' + self.get_axislabel(0) +'.dat')
         else:
             te = range(2, self._number_of_loops)
             te.reverse()
