@@ -1,5 +1,5 @@
 # Metatdata.py class, to store sample related metadata
-# Sam Gorman <samuel.gorman@student.unsw.edu.au>, 2013
+# Sam Gorman <samuel.gorman@student.unsw.edu.au> 2013
 # Sam Hile <samhile@gmail.com> 2013
 # Charley Peng <cpeng92@gmail.com> 2013
 #
@@ -33,16 +33,6 @@ class x_time(Instrument):
     Usage:
     Initialize with
     <name> = instruments.create('name', 'x_time')
-
-    TODO:
-    1) multi line textbox for user.
-    -> will have to change gui/frontpanel.py
-    
-    Store Metadata on 
-        User
-        Notes
-        Time            
-        Device Number        
     '''
 
     def __init__(self, name, reset=False):
