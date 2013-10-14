@@ -22,6 +22,7 @@ import types
 import logging
 import time
 
+
 class x_time(Instrument):
     '''
     This is the python driver for the time-instrument
@@ -48,15 +49,14 @@ class x_time(Instrument):
         logging.info(__name__ + ' : Initializing meta')
         Instrument.__init__(self, name, tags=['virtual'])
 
-         
         self.add_parameter('time', type=types.FloatType,
-            flags=Instrument.FLAG_GETSET , units = 's', tags = ['sweep'], )   
-            
+                           flags=Instrument.FLAG_GETSET, units='s', tags=['sweep'], )
 
         self.add_function('do_get_time')
         self.add_function('do_set_time')
+        # reset ?
         self._starting_time = time.time()
-        
+
         if reset:
             self.reset()
         else:
@@ -69,7 +69,7 @@ class x_time(Instrument):
     def get_all(self):
         '''
         Reads all implemented parameters that have been set,
-        and updates the wrapperself.
+        and updates the wrapper.
 
         Input:
             None
@@ -77,16 +77,18 @@ class x_time(Instrument):
         Output:
             None
         '''
-        logging.info('reading all settings from metadata instrument')               
+        logging.info('reading all settings from x_time instrument')
         # TODO ? is this necessary
+
     def do_set_time(self, val):
         import time
+
         if val == 0:
             self.reset_time()
         else:
-            while self.get_time() <val:
+            while self.do_get_time() < val:
                 time.sleep(0.001)
-                
+
     def do_get_time(self):
         '''
         Returns the current time in this format
@@ -97,4 +99,4 @@ class x_time(Instrument):
     def reset_time(self):
         self._starting_time = time.time()
            
-        
+
