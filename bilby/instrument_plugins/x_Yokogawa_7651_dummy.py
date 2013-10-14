@@ -56,41 +56,39 @@ class x_Yokogawa_7651_dummy(Instrument):
         '''
         logging.info(__name__ + ' : Initializing instrument Yoko')
         Instrument.__init__(self, name, tags=['physical'])
-                
+
         # Set constants
-	self._address = address
-	self._dummy_range = 0.01
-	self._dummy_voltage = 0
-	self._dummy_current_limit = 5
-	self._dummy_status = 'on'
-		
+        self._address = address
+        self._dummy_range = 0.01
+        self._dummy_voltage = 0
+        self._dummy_current_limit = 5
+        self._dummy_status = 'on'
+
         #self._visainstrument = visa.instrument(self._address)
-        
-        
+
+
 
         # Add parameters
         # Implemented parameters        
-        self.add_parameter('range', type=types.FloatType, 
-            flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
-            minval=10e-3, maxval=10, units='V')
+        self.add_parameter('range', type=types.FloatType,
+                           flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
+                           minval=10e-3, maxval=10, units='V')
         self.add_parameter('voltage', type=types.FloatType, tags=['sweep'],
-            flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
-            minval=lowerlim, maxval=upperlim, units='V', maxstep=step, stepdelay=delay)
+                           flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
+                           minval=lowerlim, maxval=upperlim, units='V', maxstep=step, stepdelay=delay)
         self.add_parameter('current_limit', type=types.FloatType,
-            flags=Instrument.FLAG_GETSET,
-            minval=5, maxval=120, units='mA')
+                           flags=Instrument.FLAG_GETSET,
+                           minval=5, maxval=120, units='mA')
         self.add_parameter('status', type=types.StringType,
-            flags=Instrument.FLAG_SET)
+                           flags=Instrument.FLAG_SET)
 
-
-		
         self.add_function('reset')
         self.add_function('get_all')
 
         self.add_function('off')
         self.add_function('on')
         self.add_function('set_to_zero')
-        
+
         if reset:
             self.reset()
         else:
@@ -111,13 +109,13 @@ class x_Yokogawa_7651_dummy(Instrument):
         logging.info(__name__ + ' : resetting instrument')
         self.set_to_zero()
         self.do_set_current_limit(120)
-	self.do_set_range(0.01)
-	#self._visainstrument.write('RC')
+        self.do_set_range(0.01)
+        #self._visainstrument.write('RC')
         self.on()
         self.get_all()
 
     def get_all(self):
-        '''
+        """
         Reads all implemented parameters from the instrument,
         and updates the wrapper.
 
@@ -126,13 +124,11 @@ class x_Yokogawa_7651_dummy(Instrument):
 
         Output:
             None
-        '''
+        """
         logging.info(__name__ + ' : get all')
         self.get_voltage()
         self.get_range()
         self.get_current_limit()
-
-
 
 
     # communication with device
@@ -148,14 +144,14 @@ class x_Yokogawa_7651_dummy(Instrument):
         '''
         logging.debug(__name__ + ' : get voltage')
         #str1 = self._visainstrument.ask('OD')
-        
+
         #dissect with regex
         #matchObj = re.search("(NDCV)(.+)",str1) #extract value as string
         #assert matchObj.group(1) == "NDCV"
         #volt = float(matchObj.group(2))
         volt = self._dummy_voltage
         return float(volt)
-        
+
     def do_set_voltage(self, val):
         '''
         Set the output voltage for the instrument
@@ -169,7 +165,7 @@ class x_Yokogawa_7651_dummy(Instrument):
         logging.debug(__name__ + ' : set voltage to %f' % val)
         #self._visainstrument.write('S%+E' % val)
         #self._visainstrument.write('E')
-	self._dummy_voltage = val
+        self._dummy_voltage = val
 
     def do_get_current_limit(self):
         '''
@@ -193,7 +189,7 @@ class x_Yokogawa_7651_dummy(Instrument):
         #dissect with regex
         #matchObj = re.search("(LA)([1234567890.]+)",str4) #extract limit value as string
         #lim = matchObj.group(2)
-	lim = self._dummy_current_limit
+        lim = self._dummy_current_limit
         return lim
 
     def do_set_current_limit(self, val):
@@ -207,9 +203,10 @@ class x_Yokogawa_7651_dummy(Instrument):
             None
         '''
         logging.debug(__name__ + ' : set I limit to %f' % val)
-        
+
         #self._visainstrument.write('LA%f' % val)
-	self._dummy_current_limit = val
+        self._dummy_current_limit = val
+
     def do_get_range(self):
         '''
         Reads the range from the instrument
@@ -235,7 +232,7 @@ class x_Yokogawa_7651_dummy(Instrument):
         #range = 10**(r-4) #map setting to value in V
         #if r == 6:
         #    range = 30
-	range = self._dummy_range
+        range = self._dummy_range
         return range
 
     def do_set_range(self, val):
@@ -252,7 +249,7 @@ class x_Yokogawa_7651_dummy(Instrument):
             None
         '''
         logging.debug(__name__ + ' : set range to %f' % val)
-	geself._dummy_range = val
+        self._dummy_range = val
         #r = int(math.ceil(math.log10(math.fabs(val))) + 4) #map 10mV...10V onto R2...R5
 
         #self._visainstrument.write('R%d' % r)
@@ -277,7 +274,7 @@ class x_Yokogawa_7651_dummy(Instrument):
                 self._visainstrument.write('O1')
             else:
                 self._visainstrument.write('O0')
-                
+
             self._visainstrument.write('E')
         else:
             raise ValueError('set_status(): can only set on or off')
