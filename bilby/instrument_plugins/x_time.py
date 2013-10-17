@@ -45,7 +45,7 @@ class x_time(Instrument):
         Device Number        
     '''
 
-    def __init__(self, name, reset=False):
+    def __init__(self, name, reset=False, upperlim=10000, lowerlim=0):
         '''
         Initializes the metadata thingy.
 
@@ -60,7 +60,8 @@ class x_time(Instrument):
 
          
         self.add_parameter('time', type=types.FloatType,
-            flags=Instrument.FLAG_GETSET , units = 's', tags = ['sweep'], )   
+            flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET ,
+            units = 's', tags = ['sweep'], minval=lowerlim, maxval=upperlim)   
             
 
         self.add_function('do_get_time')

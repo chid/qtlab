@@ -15,8 +15,9 @@ class channels(object):
         self.inst = inst
         self._parameter_name = parameter
         self._name = name
-        self._units = self.inst.get_parameter_options(self._parameter_name)['units'];
+        self._units = self.inst.get_parameter_options(self._parameter_name)['units']
 
+        
     def get_units(self):
         return self._units
 
@@ -35,6 +36,15 @@ class channels_out(channels):
         super(channels_out, self).__init__(name, inst, parameter)
         self._divider_factor = float(dividerfactor)
         self._check_parameter_has_sweep_tag()
+        self._maxval = self.inst.get_parameter_options(self._parameter_name)['maxval']
+        self._minval = self.inst.get_parameter_options(self._parameter_name)['minval']
+
+    def get_maxval(self):
+        return self._maxval/self._divider_factor
+
+    def get_minval(self):
+        return self._minval/self._divider_factor
+    
         
     def get_out(self):
         return float(self.inst.get(self._parameter_name))/ self._divider_factor

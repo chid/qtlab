@@ -241,6 +241,15 @@ class sweep(object):
         axislabel = axislabel[0:(len(axislabel)-1)]
         return axislabel
 
+    def get_filenamelabel(self, loop):
+        '''From the channels and the channel factors this determined the label for filename'''
+        axislabel = ''
+        for q in range(0, self._number_of_out_channels):
+            if self._channel_factors[loop][q] != 0:
+                axislabel = axislabel + str(self._channel_factors[loop][q]) + self._channels_out[q].get_name()+ '_'
+        axislabel = axislabel[0:(len(axislabel)-1)]
+        return axislabel
+
     def run(self):
         '''This is how you begin the sweep. Checks if everything is setup then runs the measuremulti function'''
         self._check_ready1()
@@ -341,14 +350,14 @@ class sweep(object):
         path = os.path.join(path, time.strftime('%Y%m%d', self._time))
         path = os.path.join(path, time.strftime('%H%M%S', self._time) +'_'+ self._name)
         if self._number_of_loops == 1:
-            path = os.path.join(path, '1D sweep' + self.get_axislabel(0) +'.dat')
+            path = os.path.join(path, '1D sweep' + self.get_filenamelabel(0) +'.dat')
         else:
             te = range(2, self._number_of_loops)
             te.reverse()
             if te !=[]:
                 for i in te:
-                    path = os.path.join(path, self.get_axislabel(i) +'_'+str(self._coord_current[i]))
-            path = os.path.join(path, '2Dsweep_' + self.get_axislabel(1) +'_vs_' +self.get_axislabel(0) +'.dat')
+                    path = os.path.join(path, self.get_filenamelabel(i) +'_'+str(self._coord_current[i]))
+            path = os.path.join(path, '2Dsweep_' + self.get_filenamelabel(1) +'_vs_' +self.get_axislabel(0) +'.dat')
         return path       
                             
     def _measuremulti(self, loop):
@@ -361,7 +370,6 @@ class sweep(object):
             self._data.create_file(filepath = self._get_path())
         if self._number_of_loops == 1:
             self._data = qt.Data(name = '1D sweep' + self.get_axislabel(0))
-            self._data.set_filepath(self._get_path())
             self._add_coordinates()
             self._add_plots()
             self._data.create_file(filepath  = self._get_path())                    

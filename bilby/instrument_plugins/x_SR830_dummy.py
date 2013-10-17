@@ -481,7 +481,7 @@ class x_SR830_dummy(Instrument):
             voltage on the output D/A converter
         '''
         logging.debug(__name__ + ' : reading the output %i' %output)
-        return float(self._aux[output])
+        return float(self._aux[output-1])
 
     def get_oaux(self, value):
         '''
