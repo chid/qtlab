@@ -4,7 +4,6 @@
 # Based off Joris Keizer's 2D sweep.
 
 # First function is to retain on a peak.
-# Function Compensation.
 
 from numpy import pi, random, arange, size
 from time import time, sleep
@@ -13,9 +12,9 @@ import qt
 
 # filename and data tags
 # we still want to measure data of course.
-filename = 'D236_measuring'
-SOURCE_1_data_tag = 'V_gate [V]'
-SOURCE_2_data_tag = 'V_sd [V]'
+filename = 'D244_compensation measurement'
+SOURCE_1_data_tag = 'V_gate [V]' # this is the gate one
+SOURCE_2_data_tag = 'V_sd [V]' # source 2 is SD
 MULTIMETER_data_tag = 'I [pA]'
 # LOCKIN
 
@@ -27,13 +26,14 @@ I_sens = -1e-9  # A/V
 I_max = 1e-9    # A
 enable_protection = True
 
+# first do a sweep and then determine where to start.
 V_start = 0.04
 V = V_start
 
 # Alternatively Set Sweep Time in Minutes
 T_sweep = True  # flag to pick time sweep
-Duration = 60 * 60  # in seconds
-T_wait = 1 * 60 # in seconds
+Duration = 60 * 60.0  # in seconds
+T_wait = 1 * 60.0 # in seconds
 
 # Instruments parameters
 SOURCE_1_driver = 'x_Yokogawa_7651'
@@ -47,53 +47,13 @@ LOCKIN_driver = 'x_SR830'
 LOCKIN_address = 5  # change.
 
 SOURCE_1_range = 1
-SOURCE_2_range = 1
+SOURCE_2_range = 1 # should I change this lower?
 MULTIMETER_range = 1
 MULTIMETER_resolution = 3e-6
 
-
 #
-# DON'T EDIT BELOW
+# DO NOT EDIT BELOW
 #
-
-def compensation(OldV=V, LockInThresh=0.005, Meter=None, MeterThresh=1e-8, LockIn=LOCKIN, jump=0.0004, iterations=1):
-    # does one shot of compensation by default
-    # threshold
-
-    # TODO: Fix
-    # right now this will just be a hardcoded value
-    if OldV > .5 or OldV < 0:
-        print 'Outside of voltage range'
-        sys.exit(1)
-
-    # Assumptions
-    # All instruments initialized
-    # Could have a check if jump is too large, perhaps user inputted mV instead of in volts.
-
-    # Measure the Lock In
-    LockInX = LockIn.get_X()
-    # We can also get_Y as an error check.
-
-    # iterations will be the number of iterations remaining
-    while iterations > 0:
-        iterations -= 1  # decrement the counter
-        if Meter is not None:
-            I = Meter.readval()  # or is it read nextval that we should use
-            if I > MeterThresh:
-                continue  # this means we don't bother correcting.
-
-        if abs(LockInX) > LockInThresh:
-            if LockInX > 0:
-                OldV += jump # in volts
-            else:
-                OldV -= jump
-                # else we do nothing.
-
-    # By default we do not measure I_sd but if it is provided we
-    # also provide meter threshold. also this can be used just as a check we're on the peak
-
-    return OldV, LockInX  # which has now been modified
-
 
 # Function to check whether an instrument is initialized
 def check_instruments(value):
@@ -110,7 +70,8 @@ if not check_instruments('SOURCE_1'):
     print "SOURCE_1 not initialized."
     print "Trying to initialize SOURCE_1..."
     SOURCE_1 = qt.instruments.create(
-        'SOURCE_1', SOURCE_1_driver, address='GPIB::' + str(SOURCE_1_address), reset=False)
+        'SOURCE_1', SOURCE_1_driver, address='GPIB::' + str(SOURCE_1_address), reset=False,
+        maxval=0.5, minval=0)  # todo: make these parameters above.
     if not check_instruments('SOURCE_1'):
         print "Could not initialize SOURCE_1, exiting..."
         sys.exit()
@@ -122,6 +83,32 @@ else:
     print "SOURCE_1 initialized."
     SOURCE_1.set_range(SOURCE_1_range)
     print "Range: " + str(SOURCE_1.get_range()) + "V"
+
+print "--------------------------------------------------------"
+
+if not check_instruments('SOURCE_2'):
+    if SOURCE_2_enabled:
+        print "SOURCE_2 not initialized."
+        print "Trying to initialize SOURCE_2..."
+        SOURCE_2 = qt.instruments.create('SOURCE_2', SOURCE_2_driver, address='GPIB::' + str(SOURCE_2_address),
+                                         maxval=0.005, minval=0,
+                                         reset=False)  # todo: make these parameters above.
+        if not check_instruments('SOURCE_2'):
+            print "Could not initialize SOURCE_2, exiting..."
+            sys.exit()
+        print "SOURCE_2 initialized."
+        SOURCE_2.set_range(SOURCE_2_range)
+        print "Range: " + str(SOURCE_2.get_range()) + "V"
+    else:
+        print "SOURCE_2 not enabled."
+else:
+    if check_instruments('SOURCE_2'):
+        print "SOURCE_2 initialized."
+        SOURCE_2.set_range(SOURCE_2_range)
+        print "Range: " + str(SOURCE_2.get_range()) + "V"
+    else:
+        print "SOURCE_2 initialized but not enabled."
+
 
 # Initialize MULTIMETER
 print "--------------------------------------------------------"
@@ -155,9 +142,47 @@ if not check_instruments('LOCKIN'):
     if not check_instruments('LOCKIN'):
         print "Could not initialize LOCKIN, exiting..."
         sys.exit()
-
 # else we shouldn't need to do anything, though we could set frequency /
 # amplitude.  since that's not part of this script.
+
+
+def compensation(OldV=V, LockInThresh=0.005, Meter=None, MeterThresh=1e-8, LockIn=LOCKIN, jump=0.0004, iterations=1):
+    # does one shot of compensation by default
+    # threshold
+
+    # TODO: Fix (Simple just add as parameters)
+    # right now this will just be a hardcoded value
+    if OldV > .5 or OldV < 0:
+        print 'Outside of voltage range'
+        sys.exit(1)
+
+    # Assumptions
+    # All instruments initialized
+    # Could have a check if jump is too large, perhaps user inputted mV instead of in volts.
+
+    # Measure the Lock In
+    LockInX = LockIn.get_X()
+    # We can also get_Y as an error check.
+
+    # iterations will be the number of iterations remaining
+    while iterations > 0:
+        iterations -= 1  # decrement the counter
+        if Meter is not None:
+            I = Meter.readval()  # or is it read nextval that we should use
+            if I > MeterThresh:
+                continue  # this means we don't bother correcting.
+
+        if abs(LockInX) > LockInThresh:
+            if LockInX > 0:
+                OldV += jump # in volts
+            else:
+                OldV -= jump
+                # else we do nothing.
+
+    # By default we do not measure I_sd but if it is provided we
+    # also provide meter threshold. also this can be used just as a check we're on the peak
+
+    return OldV, LockInX  # which has now been modified
 
 # Setup the sweep arrays
 print "--------------------------------------------------------"
@@ -179,10 +204,14 @@ if (key == 'n') or (key == 'N'):
 data = qt.Data(name=filename)
 if T_sweep:
     # todo: figure out timezone of time.time()
+    # seems to be local time. it's relative.
     data.add_coordinate('Time [Unix]')
 data.add_coordinate(SOURCE_1_data_tag)
 data.add_value(MULTIMETER_data_tag)
 data.add_value("LockInX")
+data.add_value("LockIn")
+# the last value is a flag which tells you whether the lock in measurement can be recorded.
+# I know, this isn't really necessary.
 data.create_file()
 
 plot_sweep = qt.Plot2D(data, name='Sweep', coorddim=1, valdim=2, maxtraces=4)
@@ -192,6 +221,9 @@ plot_sweep = qt.Plot2D(data, name='Sweep', coorddim=1, valdim=2, maxtraces=4)
 t = time()
 qt.mstart()
 if T_sweep:
+    # set SD bias. .5 mV
+    SOURCE_2.set_voltage(0.0005)
+
     while Duration > 0:
         # Decrement duration by time since last measurement
         Duration -= (time() - t) # this will be a floating point.
@@ -205,16 +237,16 @@ if T_sweep:
         if abs(I_meas) > 1e20:
             I_meas = 0
             break
-        data.add_data_point(time(), V, I_meas * I_sens / 1e-12, 0) # terrible terrible
+        data.add_data_point(time(), V, I_meas * I_sens / 1e-12, 0, 0) # terrible terrible
         plot_sweep.update()
 
-        V, LockInX = compensation(V)
+        V, LockInXVal = compensation(V)
         if V > 0.5 or V < 0:
             print 'exited bounds'
             break
         SOURCE_1.set_voltage(V)
         I_meas = MULTIMETER.get_readval()
-        data.add_data_point(time(), V, I_meas * I_sens / 1e-12, LockInX)
+        data.add_data_point(time(), V, I_meas * I_sens / 1e-12, LockInXVal, 1)
 
         if (I_meas * I_sens) > abs(I_max):
             print "BREAKING: Max I reached"
@@ -232,7 +264,8 @@ qt.mend()
 
 # Tidying up
 # Don't worry this ramps down.
-SOURCE_1.set_voltage(0)
+SOURCE_1.set_voltage(0) # perhaps this shouldn't be done, just leave it where it is. [on a peak]
+# I will just leave SD be the same.
 
 # Save sweep and map as png-file
 plot_sweep.save_png()
