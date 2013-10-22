@@ -1,1 +1,5 @@
 QT Lab environment
+
+You should move (and edit) userconfig.sample.py to userconfig.py before use.
+
+Make sure your instance name is not blank.
