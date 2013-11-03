@@ -26,5 +26,5 @@ I1.set_units('A')
 I2 = channels.channels_in('I2', HP2, 'readval', gain = '2e8')
 I2.set_units('A')
 
-channel_panel_gui.channel_panel([VSD, VG1, VG2, VG3])
-channel_panel_gui.main()
+#channel_panel_gui.channel_panel([VSD, VG1, VG2, VG3])
+#channel_panel_gui.main()

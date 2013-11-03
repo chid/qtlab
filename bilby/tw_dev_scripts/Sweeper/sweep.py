@@ -5,6 +5,7 @@ import os
 import os.path
 import channels
 import time
+import sys
 from lib.config import get_config
 config = get_config()
 
@@ -110,13 +111,16 @@ class sweep(object):
                 if  self._loops[i][j] == []:
                     self._check_ready = False
 
+    def _check_if_out_of_range(self):
+        pass
+
     def _reset(self):
         '''resets the variables that need to be changed if something like the number of loops changes'''
         print 'resetting channel constants, channel factors etc'
-        self._channel_constants = [[] for row in range(self._number_of_out_channels)]       #starting values in the channel
+        self._channel_constants = [0 for row in range(self._number_of_out_channels)]       #starting values in the channel
         self._channel_factors = numpy.zeros((self._number_of_loops, self._number_of_out_channels))
         self._function = [[] for row in range(self._number_of_loops)]       #what do you want to run after you have steped?
-        self._loops = [[[] for col in range(3)] for row in range(self._number_of_loops)]
+        self._loops = [[0 for col in range(3)] for row in range(self._number_of_loops)]
         self._coord_current = [[] for row in range(self._number_of_loops)]
         self._sweep = [[] for row in range(self._number_of_loops)]
         self._final_coord = [[] for row in range(self._number_of_loops -1)]
@@ -278,7 +282,11 @@ class sweep(object):
                 Out[q] = self._channels_out[q].get_out()
             qt.msleep(0.001)
             for  q in range(0, self._number_of_in_channels):
-                In[q] = self._channels_in[q].get_in()                
+                In[q] = self._channels_in[q].get_in()
+                if In[q] > self._channels_in[q].get_max() and self._channels_in[q].get_max()>0:
+                    print 'Aborting current above max'
+                    qt.mend()
+                    sys.exit()
             datapoints = self._coord_current + In + Out
             self._data.add_data_point(*datapoints)           
             if self._updatepoints == True:

@@ -45,7 +45,12 @@ class channels_out(channels):
     def get_minval(self):
         return self._minval/self._divider_factor
     
-        
+    def check_in_range(self, val):
+        if val <= self.get_maxval() and val >= self.get_minval():
+            return True
+        else:
+            return False
+       
     def get_out(self):
         return float(self.inst.get(self._parameter_name))/ self._divider_factor
 
@@ -69,8 +74,17 @@ class channels_in(channels):
         super(channels_in, self).__init__(name, inst, parameter)
         self._gain = float(gain) 
         self._check_parameter_has_measure_tag()
+        self._maxval = 0
 
+    def get_max(self):
+        return self._maxval
 
+    def set_max(self,val):
+        if val>0:
+            self._maxval = val
+        else:
+            print 'invalid value'
+        
     def get_in(self):
         return self.inst.get(self._parameter_name)/self._gain
 

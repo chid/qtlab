@@ -17,7 +17,7 @@ class channel_panel:
             self._channels[i].set_out(adj.get_value())
         adj.set_value(self._channels[i].get_out())
         
-    def __init__(self,channels):
+    def __init__(self, channels):
         self._channels = channels
         window = gtk.Window(gtk.WINDOW_TOPLEVEL)
         window.connect("destroy", lambda w: gtk.main_quit())
