@@ -247,8 +247,7 @@ class x_Yokogawa_7651(Instrument):
         r = int(math.ceil(math.log10(math.fabs(val))) + 4) #map 10mV...10V onto R2...R5
 
         self._visainstrument.write('R%d' % r)
-        self._visainstrument.write('E')
-        print r
+        self._visainstrument.write('E')        
 
 
     def do_set_status(self, val):
