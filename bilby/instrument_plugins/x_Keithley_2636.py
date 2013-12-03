@@ -97,7 +97,7 @@ class x_Keithley_2636(Instrument):
             0 : "OFF",
             1 : "ON"})
             
-        self.add_parameter('measure_nplc', type=types.FloatType, 
+        self.add_parameter('nplc', type=types.FloatType, 
             flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
             channels=(1, 2), minval=0.001, maxval = 25)
             
@@ -362,7 +362,7 @@ class x_Keithley_2636(Instrument):
         else:
             raise ValueError('Invalid channel')
     
-    def do_set_nplc(self, channel, nplc):
+    def do_set_nplc(self, nplc, channel):
         # Set speed (nplc = 0.001 to 25)
         if channel == 1:        
             self._visainstrument.write('smua.measure.nplc=%e' % nplc)
@@ -370,7 +370,15 @@ class x_Keithley_2636(Instrument):
             self._visainstrument.write('smub.measure.nplc=%e' % nplc)
         else:
             raise ValueError('Invalid channel')
-     
+    
+    def do_get_nplc(self, channel):
+        # Set speed (nplc = 0.001 to 25)
+        if channel == 1:        
+            return float(self._visainstrument.ask('print(smua.measure.nplc)'))
+        elif channel == 2:
+            return float(self._visainstrument.ask('print(smub.measure.nplc)'))
+        else:
+            raise ValueError('Invalid channel')    
 
     def do_get_output_status(self, channel):
         '''
