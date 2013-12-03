@@ -40,7 +40,7 @@ class x_Keithley_2636(Instrument):
     '''
 
 
-    def __init__(self, name, address, reset=False):
+    def __init__(self, name, address, reset=False, step=10e-3, delay=10, upperlim=12, lowerlim=-12):
         '''
         Initialzes the Yoko, and communicates with the wrapper
 
@@ -66,7 +66,7 @@ class x_Keithley_2636(Instrument):
             units='A', channels=(1, 2), tags=['sweep', 'measure'])
         self.add_parameter('voltage', type=types.FloatType, 
             flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
-            units='V', channels=(1, 2), tags=['sweep', 'measure'])
+            units='V', channels=(1, 2), tags=['sweep', 'measure'], minval=lowerlim, maxval=upperlim, maxstep=step, stepdelay=delay)
         self.add_parameter('limit', type=types.FloatType, 
             flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
             units='AU', channels=(1, 2))
@@ -96,6 +96,11 @@ class x_Keithley_2636(Instrument):
             format_map = {
             0 : "OFF",
             1 : "ON"})
+            
+        self.add_parameter('measure_nplc', type=types.FloatType, 
+            flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
+            channels=(1, 2), minval=0.001, maxval = 25)
+            
         self.add_parameter('measure_autorange', type=types.IntType, 
             flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET,
             channels=(1, 2),
@@ -303,20 +308,20 @@ class x_Keithley_2636(Instrument):
         logging.debug(__name__ + ' :Getting the limit value of channel %i' % channel)
         if channel == 1:
             mode = int(float(self._visainstrument.ask('print(smua.source.func)')))
-            if mode == 0:
+            if mode == 1:
                 limit = float(self._visainstrument.ask('print(smua.source.limiti)'))
                 return limit
-            elif mode == 1:
+            elif mode == 0:
                 limit = float(self._visainstrument.ask('print(smua.source.limitv)'))
                 return limit
             else:
                 raise ValueError('Invalid mode')
         elif channel == 2:
             mode = int(float(self._visainstrument.ask('print(smub.source.func)')))
-            if mode == 0:
+            if mode == 1:
                 limit = float(self._visainstrument.ask('print(smub.source.limiti)'))
                 return limit
-            elif mode == 1:
+            elif mode == 0:
                 limit = float(self._visainstrument.ask('print(smub.source.limitv)'))
                 return limit
             else:
@@ -340,23 +345,32 @@ class x_Keithley_2636(Instrument):
         logging.debug(__name__ + ' :Setting the limit value of channel %i' % channel)
         if channel == 1:
             mode = int(float(self._visainstrument.ask('print(smua.source.func)')))
-            if mode == 0:
+            if mode == 1:
                 self._visainstrument.write('smua.source.limiti=%e' % val)
-            elif mode == 1:
+            elif mode == 0:
                 self._visainstrument.write('smua.source.limitv=%e' % val)
             else:
                 raise ValueError('Invalid mode')
         elif channel == 2:
             mode = int(float(self._visainstrument.ask('print(smub.source.func)')))
-            if mode == 0:
+            if mode == 1:
                 self._visainstrument.write('smub.source.limiti=%e' % val)
-            elif mode == 1:
+            elif mode == 0:
                 self._visainstrument.write('smub.source.limitv=%e' % val)
             else:
                 raise ValueError('Invalid mode')
         else:
             raise ValueError('Invalid channel')
-
+    
+    def do_set_nplc(self, channel, nplc):
+        # Set speed (nplc = 0.001 to 25)
+        if channel == 1:        
+            self._visainstrument.write('smua.measure.nplc=%e' % nplc)
+        elif channel == 2:
+            self._visainstrument.write('smub.measure.nplc=%e' % nplc)
+        else:
+            raise ValueError('Invalid channel')
+     
 
     def do_get_output_status(self, channel):
         '''
