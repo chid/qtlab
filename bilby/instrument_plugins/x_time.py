@@ -36,7 +36,7 @@ class x_time(Instrument):
     <name> = instruments.create('name', 'x_time')
     '''
 
-    def __init__(self, name, reset=False):
+    def __init__(self, name, reset=False, upperlim=10000, lowerlim=0):
         '''
         Initializes the metadata thingy.
 
@@ -50,8 +50,9 @@ class x_time(Instrument):
         Instrument.__init__(self, name, tags=['virtual'])
 
         self.add_parameter('time', type=types.FloatType,
-                           flags=Instrument.FLAG_GETSET, units='s', tags=['sweep'], )
-
+            flags=Instrument.FLAG_GETSET | Instrument.FLAG_GET_AFTER_SET ,
+            units = 's', tags = ['sweep'], minval=lowerlim, maxval=upperlim)   
+            
         self.add_function('do_get_time')
         self.add_function('do_set_time')
         # reset ?
@@ -77,8 +78,7 @@ class x_time(Instrument):
         Output:
             None
         '''
-        logging.info('reading all settings from x_time instrument')
-        # TODO ? is this necessary
+        logging.info('reading all settings from x_time instrument')        
 
     def do_set_time(self, val):
         import time
