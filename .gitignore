@@ -1,6 +1,18 @@
+<<<<<<< HEAD
 .gitignore
 *.pyc
 qtlab.log
 qtlab.cfg
 data
 tmp
+=======
+*.py[cod]
+*.log
+qtlab.bat
+qtlabgui.cfg
+userconfig.py
+*.cfg
+*.lock
+*.bak
+*.tmp
+>>>>>>> 653782cd5172ef2c9ab46a2bfac41bf527518d0a
